@@ -1,0 +1,137 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="MainWindow"
+        Title="MSGraphAPIGUI" Height="845" Width="910">
+    <StackPanel Orientation="Vertical" Margin="5">
+        <Border BorderBrush="Gray" Background="#FFEFFAFF" BorderThickness="1" Margin="0,2" Padding="5">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="applicationTextBlock" Text="Azure AD Application:" FontSize="15" Margin="0,2,5,2"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Label x:Name="clientIdLabel" Content="Application (Client) ID:"/>
+                        <TextBox x:Name="clientIdTextBox" Margin="4" Width="220" />
+                        <Label x:Name="tenantIdLabel" Content="Directory (Tenant) ID:"/>
+                        <TextBox x:Name="tenantIdTextBox" Margin="4" Width="220" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label x:Name="redirectUriLabel" Content="Redirect URI:"/>
+                        <TextBox x:Name="redirectUriTextBox" Margin="4" Width="350" Text="https://login.microsoftonline.com/common/oauth2/nativeclient" />
+                    </StackPanel>
+                </StackPanel>
+                
+            </StackPanel>
+        </Border>
+        <Border BorderBrush="Gray" Background="#FFEFFAFF" BorderThickness="1" Margin="0,2" Padding="5">
+            <StackPanel Orientation="Vertical">
+                <TextBlock x:Name="permissionsTextBlock" Text="Permissions:" FontSize="15" />
+                <StackPanel Orientation="Horizontal">
+                    <Border BorderBrush="Gray" Background="White" BorderThickness="1" Margin="5" Padding="3">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <RadioButton x:Name="applicationPermissionsRadioButton" Content="Application Permissions" GroupName="Permissions" IsChecked="True"/>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label x:Name="clientSecretLabel" Content="Secret:"/>
+                                    <PasswordBox x:Name="clientSecretPasswordBox" Margin="4" Width="250" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border BorderBrush="Gray" Background="White" BorderThickness="1" Margin="5" Padding="3">
+                        <StackPanel Orientation="Vertical" Margin="10">
+                            <RadioButton x:Name="userPermissionsRadioButton" Content="(Delegated) User Permissions" GroupName="Permissions"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label x:Name="userPermissionsLabel" Content="Request Permissions:"/>
+                                <TextBox x:Name="userPermissionsTextBox" Margin="4" Width="360" Text="User.Read" MinLines="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="34" MaxHeight="34" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="scopeDescriptionTextBlock" Text="Note: Multiple permissions need to be separated with a space" Margin="4" FontStyle="Italic"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label x:Name="grantedUserPermissionsLabel" Content="Granted Permissions:"/>
+                                <TextBox x:Name="grantedUserPermissionsTextBox" Margin="4" Width="360" MinLines="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="34" MaxHeight="34" IsReadOnly="True" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <Border BorderBrush="Gray" Background="#FFEFFAFF" BorderThickness="1" Margin="0,2" Padding="5">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="authenticationTextBlock" Text="Authentication:" FontSize="15" />
+                <Button x:Name="authButton" Content="Authenticate" Margin="10,0"/>
+                <TextBlock x:Name="authStatusTextBlock" Text="Not Authenticated" Margin="0,2"/>
+            </StackPanel>
+        </Border>
+        <Border BorderBrush="Gray" Background="#FFEFFAFF" BorderThickness="1" Margin="0,2" Padding="5">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="queryTextBlock" Text="Query:" FontSize="15"/>
+                    <StackPanel Orientation="Vertical" Margin="5,0">
+                        <Label x:Name="httpMethodLabel" Content="Method"/>
+                        <ComboBox x:Name="httpMethodComboBox"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="5,0">
+                        <Label x:Name="httpQueryLabel" Content="Query"/>
+                        <TextBox x:Name="httpQueryTextBox" Width="680" Height="22" Text="https://graph.microsoft.com/v1.0/me" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="5,0">
+                        <Button x:Name="runQueryButton" Content="Run Query" Width="60" Margin="0,27,0,5" IsEnabled="False"/>
+                    </StackPanel>
+                </StackPanel>
+                <TabControl x:Name="httpRequestTabControl" Height="155" VerticalAlignment="Top" Margin="0,5,2,2">
+                    <TabItem x:Name="httpRequestBodyTabItem" Header="Request Body" IsEnabled="False">
+                        <StackPanel>
+                            <TextBox x:Name="httpRequestBodyTextBox" TextWrapping="Wrap" AcceptsTab="True" Margin="1,1,1,0" Height="124" MinHeight="124" VerticalScrollBarVisibility="Auto" BorderBrush="White" AcceptsReturn="True" IsEnabled="False"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem x:Name="httpRequestHeadersTabItem" Header="Request Headers">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical" Margin="5,0">
+                                <Label x:Name="requestKeyLabel" Content="Key"/>
+                                <TextBox x:Name="requestKey1TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestKey2TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestKey3TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestKey4TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestKey5TextBox" Width="415" Margin="0,1"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical" Margin="5,0">
+                                <Label x:Name="requestValueLabel" Content="Value"/>
+                                <TextBox x:Name="requestValue1TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestValue2TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestValue3TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestValue4TextBox" Width="415" Margin="0,1"/>
+                                <TextBox x:Name="requestValue5TextBox" Width="415" Margin="0,1"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </StackPanel>
+        </Border>
+        <Border BorderBrush="Gray" Background="#FFEFFAFF" BorderThickness="1" Margin="0,2" Padding="5">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="5,0">
+                    <TextBlock x:Name="responseTextBlock" Text="Response:" FontSize="15" Margin="0,2,5,2"/>
+                    <Label x:Name="httpResponseStatusLabel" Content="Status:" />
+                    <TextBox x:Name="httpResponseStatusTextBox" Width="640" Margin="5" IsReadOnly="True" />
+                    <Button x:Name="exportResponseContentButton" Content="Export Content" Margin="5" IsEnabled="False"/>
+                </StackPanel>
+                <TabControl x:Name="httpResponseTabControl" Height="210" VerticalAlignment="Top" Margin="0,5,2,2">
+                    <TabItem x:Name="httpResponseContentTabItem" Header="Response Content">
+                        <StackPanel>
+                            <TextBox x:Name="httpResponseContentTextBox" TextWrapping="Wrap" AcceptsTab="True" Margin="1,1,1,0" Height="180" MinHeight="180" VerticalScrollBarVisibility="Auto" BorderBrush="White" AcceptsReturn="True" IsReadOnly="True"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem x:Name="httpResponseHeadersTabItem" Header="Response Headers">
+                        <StackPanel>
+                            <TextBox x:Name="httpResponseHeadersTextBox" TextWrapping="Wrap" AcceptsTab="True" Margin="1,1,1,0" Height="180" MinHeight="180" VerticalScrollBarVisibility="Auto" BorderBrush="White" AcceptsReturn="True" IsReadOnly="True"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </StackPanel>
+        </Border>
+        <TextBlock x:Name="creditTextBlock" Text="MSGraphAPIGUI - https://github.com/leeford/MSGraphAPIGUI"/>
+    </StackPanel>
+</Window>
