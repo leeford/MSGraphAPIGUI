@@ -47,7 +47,7 @@
                                 <TextBox x:Name="userPermissionsTextBox" Margin="4" Width="360" Text="User.Read" MinLines="2" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Height="34" MaxHeight="34" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock x:Name="scopeDescriptionTextBlock" Text="Note: Multiple permissions need to be separated with a space" Margin="4" FontStyle="Italic"/>
+                                <TextBlock x:Name="scopeDescriptionTextBlock" Text="Note: Multiple requested permissions need to be separated with a space" Margin="4" FontStyle="Italic"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label x:Name="grantedUserPermissionsLabel" Content="Granted Permissions:"/>
@@ -60,9 +60,10 @@
         </Border>
         <Border BorderBrush="Gray" Background="#FFEFFAFF" BorderThickness="1" Margin="0,2" Padding="5">
             <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="authenticationTextBlock" Text="Authentication:" FontSize="15" />
-                <Button x:Name="authButton" Content="Authenticate" Margin="10,0"/>
-                <TextBlock x:Name="authStatusTextBlock" Text="Not Authenticated" Margin="0,2"/>
+                <TextBlock x:Name="authenticationTextBlock" Text="Authentication:" FontSize="15" Margin="0,2,5,2"/>
+                <Button x:Name="authButton" Content="Authenticate" Margin="5"/>
+                <TextBlock x:Name="authStatusTextBlock" Text="Status:" Margin="5"/>
+                <TextBox x:Name="authStatusTextBox" Width="400" Margin="5" IsReadOnly="True" />
             </StackPanel>
         </Border>
         <Border BorderBrush="Gray" Background="#FFEFFAFF" BorderThickness="1" Margin="0,2" Padding="5">
@@ -75,7 +76,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="5,0">
                         <Label x:Name="httpQueryLabel" Content="Query"/>
-                        <TextBox x:Name="httpQueryTextBox" Width="680" Height="22" Text="https://graph.microsoft.com/v1.0/me" />
+                        <TextBox x:Name="httpQueryTextBox" Width="680" Height="22" Text="https://graph.microsoft.com/v1.0/users" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Margin="5,0">
                         <Button x:Name="runQueryButton" Content="Run Query" Width="60" Margin="0,27,0,5" IsEnabled="False"/>

@@ -1,5 +1,6 @@
 
 
+
 # Add required assemblies
 Add-Type -AssemblyName System.Web, PresentationFramework, PresentationCore
 
@@ -49,11 +50,13 @@ function GetAuthToken {
             # Get Issued Token for User
             $script:issuedToken = GetAuthTokenUser
 
-        } else {
+        }
+        else {
 
             Write-Warning "Not all fields populated to request token"
-            $script:WPFObject.authStatusTextBlock.Text = "Not all fields populated to request token"
-            $script:WPFObject.authStatusTextBlock.Foreground = "Red"
+            $script:WPFObject.authStatusTextBox.Text = "Not all fields populated to request token"
+            $script:WPFObject.authStatusTextBox.Foreground = "Red"
+            $script:WPFObject.authStatusTextBox.Background = "Pink"
 
         }
 
@@ -72,13 +75,22 @@ function GetAuthToken {
             # Get Issued Token for Application
             $script:issuedToken = GetAuthTokenApplication
 
-        } else {
+        }
+        else {
 
             Write-Warning "Not all fields populated to request token"
-            $script:WPFObject.authStatusTextBlock.Text = "Not all fields populated to request token"
-            $script:WPFObject.authStatusTextBlock.Foreground = "Red"
+            $script:WPFObject.authStatusTextBox.Text = "Not all fields populated to request token"
+            $script:WPFObject.authStatusTextBox.Foreground = "Red"
+            $script:WPFObject.authStatusTextBox.Background = "Pink"
 
         }
+    }
+
+    # If there is an issued token, set the token timer
+    if ($script:issuedToken.access_token) {
+
+        $script:tokenTimer = Get-Date
+
     }
 
 }
@@ -102,7 +114,7 @@ function GetAuthCodeUser {
     $redirectUri = [System.Web.HttpUtility]::UrlEncode($script:WPFObject.redirectUriTextBox.Text)
 
     # Construct URI
-    $uri = [uri]"https://login.microsoftonline.com/$tenantId/oauth2/v2.0/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&response_mode=query&scope=$scope&state=$state"
+    $uri = [uri]"https://login.microsoftonline.com/$tenantId/oauth2/v2.0/authorize?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&response_mode=query&scope=$scope&state=$state&prompt=login"
 
     # Create Window for User Sign-In
     $windowProperty = @{
@@ -180,7 +192,7 @@ function GetAuthTokenUser {
     # Construct Body
     $body = @{
         client_id    = $clientId
-        scope        = $scope
+        scope        = "$scope offline_access" # Add offline_access to scope to ensure refresh_token is issued
         code         = $authCode[1]
         redirect_uri = $script:WPFObject.redirectUriTextBox.Text
         grant_type   = "authorization_code"
@@ -197,8 +209,9 @@ function GetAuthTokenUser {
     catch [System.Net.WebException] {
 
         Write-Warning "Exception was caught: $($_.Exception.Message)"
-        $script:WPFObject.authStatusTextBlock.Text = "$authDate - $($_.Exception.Message)"
-        $script:WPFObject.authStatusTextBlock.Foreground = "Red"
+        $script:WPFObject.authStatusTextBox.Text = "$authDate - $($_.Exception.Message)"
+        $script:WPFObject.authStatusTextBox.Foreground = "Red"
+        $script:WPFObject.authStatusTextBox.Background = "Pink"
         $script:WPFObject.runQueryButton.IsEnabled = $false
     
     }
@@ -207,8 +220,65 @@ function GetAuthTokenUser {
     if ($tokenRequest.StatusCode -eq 200) {
 
         # Update UI
-        $script:WPFObject.authStatusTextBlock.Text = "$authDate - User Token Acquired"
-        $script:WPFObject.authStatusTextBlock.Foreground = "Green"
+        $script:WPFObject.authStatusTextBox.Text = "$authDate - User Token Acquired"
+        $script:WPFObject.authStatusTextBox.Foreground = "DarkGreen"
+        $script:WPFObject.authStatusTextBox.Background = "LightGreen"
+        $script:WPFObject.runQueryButton.IsEnabled = $true
+        $script:WPFObject.grantedUserPermissionsTextBox.Text = $tokenRequest.Content | ConvertFrom-Json | Select-Object -ExpandProperty scope
+
+        return $tokenRequest.Content | ConvertFrom-Json
+        
+    }
+
+}
+
+function GetAuthTokenUserRefresh {
+
+    param (
+
+    )
+
+    $clientId = [string]$script:WPFObject.clientIdTextBox.Text
+    $tenantId = [string]$script:WPFObject.tenantIdTextBox.Text
+    $scope = [string]$script:WPFObject.userPermissionsTextBox.Text
+
+    # Construct URI
+    $uri = [uri]"https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token"
+
+    # Construct Body
+    $body = @{
+        client_id    = $clientId
+        scope        = "$scope offline_access" # Add offline_access to scope to ensure refresh_token is issued
+        redirect_uri = $script:WPFObject.redirectUriTextBox.Text
+        grant_type   = "refresh_token"
+        refresh_token = $script:issuedToken.refresh_token
+    }
+
+    $authDate = Get-Date
+
+    # Get OAuth 2.0 Token
+    $tokenRequest = try {
+
+        Invoke-WebRequest -Method Post -Uri $uri -ContentType "application/x-www-form-urlencoded" -Body $body -ErrorAction Stop
+
+    }
+    catch [System.Net.WebException] {
+
+        Write-Warning "Exception was caught: $($_.Exception.Message)"
+        $script:WPFObject.authStatusTextBox.Text = "$authDate - $($_.Exception.Message)"
+        $script:WPFObject.authStatusTextBox.Foreground = "Red"
+        $script:WPFObject.authStatusTextBox.Background = "Pink"
+        $script:WPFObject.runQueryButton.IsEnabled = $false
+    
+    }
+
+    # If token request was a success
+    if ($tokenRequest.StatusCode -eq 200) {
+
+        # Update UI
+        $script:WPFObject.authStatusTextBox.Text = "$authDate - Refreshed User Token Acquired"
+        $script:WPFObject.authStatusTextBox.Foreground = "DarkGreen"
+        $script:WPFObject.authStatusTextBox.Background = "LightGreen"
         $script:WPFObject.runQueryButton.IsEnabled = $true
         $script:WPFObject.grantedUserPermissionsTextBox.Text = $tokenRequest.Content | ConvertFrom-Json | Select-Object -ExpandProperty scope
 
@@ -250,8 +320,9 @@ function GetAuthTokenApplication {
     catch [System.Net.WebException] {
 
         Write-Warning "Exception was caught: $($_.Exception.Message)"
-        $script:WPFObject.authStatusTextBlock.Text = "$authDate - $($_.Exception.Message)"
-        $script:WPFObject.authStatusTextBlock.Foreground = "Red"
+        $script:WPFObject.authStatusTextBox.Text = "$authDate - $($_.Exception.Message)"
+        $script:WPFObject.authStatusTextBox.Foreground = "Red"
+        $script:WPFObject.authStatusTextBox.Background = "Pink"
         $script:WPFObject.runQueryButton.IsEnabled = $false
     
     }
@@ -260,8 +331,9 @@ function GetAuthTokenApplication {
     if ($tokenRequest.StatusCode -eq 200) {
 
         # Update UI
-        $script:WPFObject.authStatusTextBlock.Text = "$authDate - Application Token Acquired"
-        $script:WPFObject.authStatusTextBlock.Foreground = "Green"
+        $script:WPFObject.authStatusTextBox.Text = "$authDate - Application Token Acquired"
+        $script:WPFObject.authStatusTextBox.Foreground = "DarkGreen"
+        $script:WPFObject.authStatusTextBox.Background = "LightGreen"
         $script:WPFObject.runQueryButton.IsEnabled = $true
 
         return $tokenRequest.Content | ConvertFrom-Json
@@ -276,6 +348,29 @@ function InvokeGraphAPICall {
 
     )
 
+    # Calculate current token age
+    $tokenAge = New-TimeSpan $script:tokenTimer (Get-Date)
+
+    # Check token has not expired
+    if ($tokenAge.TotalSeconds -gt 3500) {
+
+        Write-Warning "Token Expired!"
+
+        # If last token issued included a refresh token
+        if($script:issuedToken.refresh_token) {
+
+            # Get new token using refresh token
+            GetAuthTokenUserRefresh
+
+        # Otherwise authenticate without
+        } else {
+
+            GetAuthToken
+
+        }
+
+    }        
+        
     # Construct headers
     $Headers = @{"Authorization" = "Bearer $($script:issuedToken.access_token)"}
     Foreach ($i in 1..5) {
@@ -312,6 +407,7 @@ function InvokeGraphAPICall {
         $querydate = Get-Date
         Write-Warning "Exception was caught: $($_.Exception.Message)"
         $script:WPFObject.httpResponseStatusTextBox.Text = "$querydate - $($_.Exception.Message)"
+        $script:WPFObject.httpResponseStatusTextBox.Foreground = "Red"
         $script:WPFObject.httpResponseStatusTextBox.Background = "Pink"
 
     }
@@ -376,7 +472,7 @@ $script:WPFObject.runQueryButton.add_Click( {
             # If there is content
             if ($apiCall.Content) {
 
-                $script:WPFObject.httpResponseContentTextBox.Text = $apiCall.Content | ConvertFrom-Json | ConvertTo-Json
+                $script:WPFObject.httpResponseContentTextBox.Text = $apiCall.Content | ConvertFrom-Json -ErrorAction SilentlyContinue | ConvertTo-Json -ErrorAction SilentlyContinue
                 $script:WPFObject.exportResponseContentButton.IsEnabled = $true
 
             }
@@ -392,6 +488,7 @@ $script:WPFObject.runQueryButton.add_Click( {
                 
                 $querydate = Get-Date
                 $script:WPFObject.httpResponseStatusTextBox.Text = "$querydate - $($apiCall.StatusCode) - $($apiCall.StatusDescription)"
+                $script:WPFObject.httpResponseStatusTextBox.Foreground = "DarkGreen"
                 $script:WPFObject.httpResponseStatusTextBox.Background = "LightGreen"
 
             }
