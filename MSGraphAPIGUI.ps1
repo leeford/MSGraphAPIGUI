@@ -394,7 +394,10 @@ function InvokeGraphAPICall {
 
         }
 
-    }        
+    }
+
+    # Method
+    $method = $script:WPFObject.httpMethodComboBox.SelectedItem
         
     # Construct headers
     $Headers = @{"Authorization" = "Bearer $($script:issuedToken.access_token)"}
@@ -410,6 +413,9 @@ function InvokeGraphAPICall {
         }
 
     }
+
+    # Body
+    $body = $script:WPFObject.httpRequestBodyTextBox.Text
 
     $apiCall = try {
 
