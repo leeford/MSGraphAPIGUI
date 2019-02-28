@@ -22,9 +22,10 @@
 .EXAMPLE
 
     .\MSGraphAPIGUI.ps1
-    Run the script.
+    Run the script. Ensure that MainWindow.xaml file is in the same folder as MSGraphAPIGUI.ps1 file.
 
 #>
+
 # Add required assemblies
 Add-Type -AssemblyName System.Web, PresentationFramework, PresentationCore
 
