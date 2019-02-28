@@ -9,7 +9,7 @@
     Author: Lee Ford
 
     A PowerShell GUI to use with Microsoft Graph API. It can be used using delegated (user) or application Graph API permissions. An Azure AD application needs to be created to use with this.
-    Note: This script is provided 'as-is' without any warranty or support. Use of this script is at your own risk and I accept no responisiblity for any damage caused.
+    Note: This script is provided 'as-is' without any warranty or support. Use of this script is at your own risk and I accept no responsibility for any damage caused.
 
     For more details go to https://www.lee-ford.co.uk/msgraphapigui---a-ps-gui-for-microsoft-graph-api/
 
