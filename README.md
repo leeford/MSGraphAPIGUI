@@ -1,7 +1,7 @@
 # MSGraphAPIGUI
 PowerShell GUI for MS Graph API 
 
-*Note: This script is provided 'as-is' without any warranty or support. Use of this script is at your own risk and I accept no responisiblity for any damage caused.*
+*Note: This script is provided 'as-is' without any warranty or support. Use of this script is at your own risk and I accept no responsibility for any damage caused.*
 
 ## DESCRIPTION
 
